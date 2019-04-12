@@ -29,22 +29,70 @@ class Database
         }
     }
 
-    public function select($table)
+    public function table($table)
     {
         $this->table = $table;
-        $this->sql = "SELECT * FROM $table";
-        $result = $this->conn->query($this->sql) or die($this->conn->error);
-        while ($row = $result->fetch_assoc()) {
-            echo "id: " . $row["id"] . " - Name: " . $row["name"] . " " . $row["surname"] . "<br>";
-        }
         return $this;
     }
 
-    public function where($id){
-        $this->sql = "SELECT * FROM $this->table WHERE id = $id";
-        $result = $this->conn->query($this->sql) or die($this->conn->error);
-        while ($row = $result->fetch_assoc()) {
-            echo "id: " . $row["id"] . " - Name: " . $row["name"] . " " . $row["surname"] . "<br>";
-        }
+    public function select(...$columns)
+    {
+        $a = $columns;
+        $text = implode(",", $a);
+        $this->sql = "SELECT $text FROM $this->table";
+        return $this;
     }
+
+    public function where($key,$operator,$value)
+    {
+        $this->sql .= " WHERE $key $operator $value";
+        return $this;
+    }
+
+    public function delete()
+    {
+        $this->sql = "DELETE FROM $this->table";
+        return $this;
+    }
+
+    public function insert($pair = []) {
+        $keyString ="";
+        $valueString ="";
+            foreach ($pair as $key=>$value) {
+              $keyString .= $key.",";
+              $valueString .="'$value'".",";
+             }
+        $keyString =substr($keyString,0,-1);
+        $valueString =substr($valueString,0,-1);
+
+        $this->sql = "INSERT INTO $this->table ($keyString) VALUES ($valueString)";
+        return $this;
+    }
+
+    public function update($pair = []){
+        $final ="";
+        foreach ($pair as $key=>$value) {
+            $final .= $key." = ". "'$value'".",";
+        }
+        $final = substr($final,0,-1);
+        $this->sql = "UPDATE $this->table SET $final";
+        return $this;
+    }
+
+    public function get()
+    {
+        $result = $this->conn->query($this->sql) or die($this->conn->error);
+//            while ($record = $result->fetch_assoc()) {
+//                echo "id: " . $record["name"] . "<br>";
+    }
+
 }
+
+
+
+
+
+
+
+
+
