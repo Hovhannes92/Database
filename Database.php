@@ -44,26 +44,24 @@ class Database
         return $this;
     }
 
+    public function stringMaker($key,$operator,$value = null){
+        if (is_int($operator)) {
+            $this->sql .= " $key" . " = " . " $operator";
+        } else {
+            $this->sql .= " $key $operator $value";
+        }
+    }
+
     public function where($key,$operator,$value = null)
     {
-
         if (empty($this->where)) {
-            $this->sql .= " WHERE ";
-            if (is_int($operator)) {
-                $this->sql .= "$key" . " = " . " $operator";
-            } else {
-                $this->sql .= "$key $operator $value";
-            }
+            $this->sql .= " WHERE";
+            $this->stringMaker($key,$operator,$value);
             $this->where = $this->sql;
         } else {
-            if (is_int($operator)) {
-                $this->sql .= " AND ". "$key" . " = " . " $operator";
-            } else {
-                $this->sql .= " AND " . "$key $operator $value";
-            }
-
-            }
-
+            $this->sql .= " AND";
+            $this->stringMaker($key,$operator,$value);
+        }
             return $this;
     }
 

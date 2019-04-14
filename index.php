@@ -13,7 +13,7 @@
         include "Database.php";
         $database = new Database("localhost","root","","testdatabase");
 //      $database->table('users')->select('id','name','surname')->where("id", ">",28 )->get();
-        $database->table('users')->delete()->where('id', '>',66)->where('id','<', 72)->get();
+        $database->table('users')->delete()->where('id', '>',66)->where('id','<', 73)->get();
 //      $database->table('users')->insert(['name'=>'aper','surname'=>'sargsyan'])->get();
 //      $database->table('users')->update(['surname'=>'vaxo','adress'=>'vaxo@gmail.com'])->where('id','=', 56)->get();
 
