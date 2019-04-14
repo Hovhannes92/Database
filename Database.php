@@ -43,9 +43,15 @@ class Database
         return $this;
     }
 
-    public function where($key,$operator,$value)
+    public function where($key,$operator,$value = null)
     {
-        $this->sql .= " WHERE $key $operator $value";
+        if(is_int($operator)){
+            $this->sql .= " WHERE $key" . " = " . " $operator";
+        }else{
+            $this->sql .= " WHERE $key $operator $value";
+        }
+
+
         return $this;
     }
 
