@@ -9,6 +9,7 @@ class Database
     public $conn;
     public $sql;
     public $table;
+    public $where;
 
     public function __construct($servername, $username, $password, $dbname)
     {
@@ -45,15 +46,27 @@ class Database
 
     public function where($key,$operator,$value = null)
     {
-        if(is_int($operator)){
-            $this->sql .= " WHERE $key" . " = " . " $operator";
-        }else{
-            $this->sql .= " WHERE $key $operator $value";
-        }
 
+        if (empty($this->where)) {
+            $this->sql .= " WHERE ";
+            if (is_int($operator)) {
+                $this->sql .= "$key" . " = " . " $operator";
+            } else {
+                $this->sql .= "$key $operator $value";
+            }
+            $this->where = $this->sql;
+        } else {
+            if (is_int($operator)) {
+                $this->sql .= " AND ". "$key" . " = " . " $operator";
+            } else {
+                $this->sql .= " AND " . "$key $operator $value";
+            }
 
-        return $this;
+            }
+
+            return $this;
     }
+
 
     public function delete()
     {
