@@ -9,7 +9,7 @@ class Database
     public $conn;
     public $sql;
     public $table;
-    public $where;
+    public $where = [];
 
     public function __construct($servername, $username, $password, $dbname)
     {
@@ -46,24 +46,38 @@ class Database
 
     public function stringMaker($key,$operator,$value = null){
         if (is_int($operator)) {
-            $this->sql .= " $key" . " = " . " $operator";
-        } else {
-            $this->sql .= " $key $operator $value";
+           $operator =  " = " .  " $operator";
         }
+        $this->sql .= " $key $operator $value";
+        $this->where[] = " $key $operator $value ";
     }
 
-    public function where($key,$operator,$value = null)
+        public function where($key,$operator,$value = null)
     {
         if (empty($this->where)) {
             $this->sql .= " WHERE";
-            $this->stringMaker($key,$operator,$value);
-            $this->where = $this->sql;
-        } else {
-            $this->sql .= " AND";
-            $this->stringMaker($key,$operator,$value);
         }
+            $this->stringMaker($key,$operator,$value);
+
+             var_dump($this->sql);
+             var_dump($this->where);
             return $this;
     }
+
+//    public function where($key,$operator,$value = null)
+//    {
+//        if (empty($this->where)) {
+//            $this->sql .= " WHERE";
+//            $this->stringMaker($key,$operator,$value);
+//            $this->where = $this->sql;
+//        } else {
+//            $this->sql .= " AND";
+//            $this->stringMaker($key,$operator,$value);
+//        }
+//
+//            var_dump($this->sql);
+//            return $this;
+//    }
 
 
     public function delete()
