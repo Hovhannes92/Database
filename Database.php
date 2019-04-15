@@ -1,5 +1,4 @@
 <?php
-
 class Database
 {
     public $servername;
@@ -19,7 +18,6 @@ class Database
         $this->dbname = $dbname;
         $this->DbConnect();
     }
-
     public function DbConnect()
     {
         // Create connection
@@ -29,13 +27,11 @@ class Database
             die("Connection failed: " . $this->connect_error);
         }
     }
-
     public function table($table)
     {
         $this->table = $table;
         return $this;
     }
-
     public function select(...$columns)
     {
         $a = $columns;
@@ -43,63 +39,46 @@ class Database
         $this->sql = "SELECT $text FROM $this->table";
         return $this;
     }
-
     public function stringMaker($key,$operator,$value = null){
-        if (is_int($operator)) {
-           $operator =  " = " .  " $operator";
+        if (is_null($value)) {
+            $value = $operator;
+            $operator = " = ";
         }
         $this->sql .= " $key $operator $value";
-        $this->where[] = " $key $operator $value ";
     }
 
-        public function where($key,$operator,$value = null)
+    public function where($key,$operator,$value = null)
     {
         if (empty($this->where)) {
             $this->sql .= " WHERE";
-        }
             $this->stringMaker($key,$operator,$value);
+            $this->where = $this->sql;
+        } else {
+            $this->sql .= " AND";
+            $this->stringMaker($key,$operator,$value);
+        }
 
-             var_dump($this->sql);
-             var_dump($this->where);
+            var_dump($this->sql);
             return $this;
     }
-
-//    public function where($key,$operator,$value = null)
-//    {
-//        if (empty($this->where)) {
-//            $this->sql .= " WHERE";
-//            $this->stringMaker($key,$operator,$value);
-//            $this->where = $this->sql;
-//        } else {
-//            $this->sql .= " AND";
-//            $this->stringMaker($key,$operator,$value);
-//        }
-//
-//            var_dump($this->sql);
-//            return $this;
-//    }
-
 
     public function delete()
     {
         $this->sql = "DELETE FROM $this->table";
         return $this;
     }
-
     public function insert($pair = []) {
         $keyString ="";
         $valueString ="";
-            foreach ($pair as $key=>$value) {
-              $keyString .= $key.",";
-              $valueString .="'$value'".",";
-             }
+        foreach ($pair as $key=>$value) {
+            $keyString .= $key.",";
+            $valueString .="'$value'".",";
+        }
         $keyString =substr($keyString,0,-1);
         $valueString =substr($valueString,0,-1);
-
         $this->sql = "INSERT INTO $this->table ($keyString) VALUES ($valueString)";
         return $this;
     }
-
     public function update($pair = []){
         $final ="";
         foreach ($pair as $key=>$value) {
@@ -109,21 +88,11 @@ class Database
         $this->sql = "UPDATE $this->table SET $final";
         return $this;
     }
-
     public function get()
     {
+        var_dump($this->sql);
         $result = $this->conn->query($this->sql) or die($this->conn->error);
 //            while ($record = $result->fetch_assoc()) {
 //                echo "id: " . $record["name"] . "<br>";
     }
-
 }
-
-
-
-
-
-
-
-
-
