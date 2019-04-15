@@ -1,14 +1,13 @@
 <?php
 class Database
 {
-    public $servername;
-    public $username;
-    public $password;
-    public $dbname;
-    public $conn;
-    public $sql;
-    public $table;
-    public $where = [];
+    private $servername;
+    private $username;
+    private $password;
+    private $dbname;
+    private $conn;
+    private $table;
+    private $sql = array();
 
     public function __construct($servername, $username, $password, $dbname)
     {
@@ -36,37 +35,36 @@ class Database
     {
         $a = $columns;
         $text = implode(",", $a);
-        $this->sql = "SELECT $text FROM $this->table";
+        $this->sql[] = "SELECT $text FROM $this->table";
         return $this;
     }
+
+    public function delete()
+        {
+    $this->sql[] = "DELETE FROM $this->table";
+         return $this;
+        }
+
     public function stringMaker($key,$operator,$value = null){
         if (is_null($value)) {
             $value = $operator;
             $operator = " = ";
         }
-        $this->sql .= " $key $operator $value";
+        $this->sql[] = " $key $operator $value";
     }
 
     public function where($key,$operator,$value = null)
     {
-        if (empty($this->where)) {
-            $this->sql .= " WHERE";
+        if(!in_array(" WHERE ", $this->sql)){
+            $this->sql[] = " WHERE ";
             $this->stringMaker($key,$operator,$value);
-            $this->where = $this->sql;
-        } else {
-            $this->sql .= " AND";
+        }else{
+            $this->sql[] = " AND ";
             $this->stringMaker($key,$operator,$value);
         }
-
-            var_dump($this->sql);
             return $this;
     }
 
-    public function delete()
-    {
-        $this->sql = "DELETE FROM $this->table";
-        return $this;
-    }
     public function insert($pair = []) {
         $keyString ="";
         $valueString ="";
@@ -76,7 +74,7 @@ class Database
         }
         $keyString =substr($keyString,0,-1);
         $valueString =substr($valueString,0,-1);
-        $this->sql = "INSERT INTO $this->table ($keyString) VALUES ($valueString)";
+        $this->sql[] = "INSERT INTO $this->table ($keyString) VALUES ($valueString)";
         return $this;
     }
     public function update($pair = []){
@@ -85,13 +83,13 @@ class Database
             $final .= $key." = ". "'$value'".",";
         }
         $final = substr($final,0,-1);
-        $this->sql = "UPDATE $this->table SET $final";
+        $this->sql[] = "UPDATE $this->table SET $final";
         return $this;
     }
     public function get()
     {
-        var_dump($this->sql);
-        $result = $this->conn->query($this->sql) or die($this->conn->error);
+        $queryString = implode("",$this->sql);
+        $result = $this->conn->query($queryString) or die($this->conn->error);
 //            while ($record = $result->fetch_assoc()) {
 //                echo "id: " . $record["name"] . "<br>";
     }
